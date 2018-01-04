@@ -385,7 +385,7 @@ namespace P2PExchangeBot
             var forNotif = Database.GetUserlistForNotifications(Username);
             foreach(var chatId in forNotif)
             {
-                await SendMessageAsync(chatId, message);
+                await SendMessageAsync(chatId, message, ParseMode.Html);
             }
         }
 
