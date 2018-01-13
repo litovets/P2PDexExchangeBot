@@ -184,7 +184,20 @@ namespace P2PExchangeBot
             }
             else if (message.Text.StartsWith("/list"))
             {
-                if (_masterChat == null)
+                if (_masterChat == null || _masterChatAdmins == null)
+                    return;
+
+                bool isUserAdmin = false;
+                foreach (var chatMember in _masterChatAdmins)
+                {
+                    if (message.From.Username == chatMember.User.Username)
+                    {
+                        isUserAdmin = true;
+                        break;
+                    }
+                }
+
+                if (!isUserAdmin)
                     return;
 
                 var reqList = Database.GetAllRequests();
@@ -281,7 +294,7 @@ namespace P2PExchangeBot
             {
                 var usage = @"<b>Использование:</b>
 /setmasterchat - Зарегистрировать мастер-чат(админ)
-/list   - Вывод списка заявок
+/list   - Вывод списка заявок (админ)
 /register - зарегистрироваться
 /escrowlist - Вывод списка гарантов
 /unregister 'username' - удалить юзера (админ)
