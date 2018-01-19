@@ -10,6 +10,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace P2PExchangeBot
 {
@@ -339,7 +340,7 @@ namespace P2PExchangeBot
                 return;
             }
 
-            _bank = msg;
+            _bank = StripTagsRegex(msg);
 
             CurrentStep = RequestSteps.EnterEndDate;
             var keyboard = new InlineKeyboardMarkup(new[]
@@ -442,7 +443,7 @@ namespace P2PExchangeBot
 
             if (!msg.Equals("Пропустить"))
             {
-                _bank = msg;
+                _bank = StripTagsRegex(msg);
             }
             else
             {
@@ -542,9 +543,17 @@ namespace P2PExchangeBot
                 return;
             }
 
-            string result = myReqs.Aggregate((current, next) => current + "\n\n" + next);
+            int idx = 0;
+            while (idx <= myReqs.Count)
+            {
+                int count = Math.Min(10, myReqs.Count - idx);
+                var lst = myReqs.GetRange(idx, count);
 
-            await SendMessageAsync(_chatId, result, ParseMode.Html);
+                string result = lst.Aggregate((current, next) => current + "\n\n" + next);
+
+                await SendMessageAsync(_chatId, result, ParseMode.Html);
+                idx += 10;
+            }
         }
 
         private async Task ProcessVote(string msg)
@@ -663,6 +672,11 @@ namespace P2PExchangeBot
             {
                 //ignore
             }
+        }
+
+        public static string StripTagsRegex(string source)
+        {
+            return Regex.Replace(source, "<.*?>", string.Empty);
         }
     }
 }
