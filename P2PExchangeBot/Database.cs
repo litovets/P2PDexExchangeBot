@@ -401,8 +401,10 @@ namespace P2PExchangeBot
                 Console.WriteLine("Exception during GetEscrowList. Message: " + ex.Message);
             }
 
+            var sortedResult = result.OrderByDescending(pair => pair.Value);
+
             List<string> escrowList = new List<string>();
-            foreach (var pair in result)
+            foreach (var pair in sortedResult)
             {
                 escrowList.Add(string.Format(EscrowListTemplate, pair.Key, pair.Value.ToString()));
             }
