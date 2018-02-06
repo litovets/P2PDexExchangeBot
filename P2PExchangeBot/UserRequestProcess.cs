@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
+using LD = P2PExchangeBot.LanguageDictionary;
+
 namespace P2PExchangeBot
 {
     enum RequestSteps
@@ -61,23 +63,29 @@ namespace P2PExchangeBot
                 {
                     new[] // first row
                     {
-                        InlineKeyboardButton.WithCallbackData("Купить"),
-                        InlineKeyboardButton.WithCallbackData("Продать"),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.BuyKey), LD.BuyKey),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.SellKey), LD.SellKey),
                     },
                     new[] // third row
                     {
-                        InlineKeyboardButton.WithCallbackData("Посмотреть мои заявки"),
-                        InlineKeyboardButton.WithCallbackData("Посмотреть все заявки"),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.ShowMyReqKey), LD.ShowMyReqKey),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.ShowAllReqKey), LD.ShowAllReqKey),
                     },
                     new[]
                     {
-                        InlineKeyboardButton.WithCallbackData("Отдать голос", "vote"),
-                        InlineKeyboardButton.WithCallbackData("Забрать голос", "unvote"),
-                        InlineKeyboardButton.WithCallbackData("Список гарантов", "escrowlist"),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.VoteKey), LD.VoteKey),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.UnvoteKey), LD.UnvoteKey),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.EscrowListKey), LD.EscrowListKey),
                     },
                     new []
                     {
-                        InlineKeyboardButton.WithCallbackData(enabledNotifications ? "Выключить оповещения" : "Включить оповещения"),
+                        InlineKeyboardButton.WithCallbackData(enabledNotifications ? LD.GetTranslate(Username, LD.DisableNotifKey) : LD.GetTranslate(Username, LD.EnableNotifKey),
+                        enabledNotifications ? LD.DisableNotifKey : LD.EnableNotifKey),
+                    },
+                    new []
+                    {
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.EnglishKey), LD.EnglishKey),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.RussianKey), LD.RussianKey),
                     }
                 });
 
@@ -91,7 +99,7 @@ namespace P2PExchangeBot
                 _startMessage = null;
             }
 
-            _startMessage = await SendMessageAsync(_chatId, "<b>Выбирайте</b>", ParseMode.Html, keyboard);
+            _startMessage = await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.StartMessageKey), ParseMode.Html, keyboard);
         }
 
         public async Task ProcessMessage(string msg)
@@ -131,7 +139,7 @@ namespace P2PExchangeBot
         private async Task ProcessStartState(string msg)
         {
             await Task.Delay(100);
-            if (msg.Equals("Продать"))
+            if (msg.Equals(LD.SellKey))
             {
                 Console.WriteLine(Username + " Продать");
                 _reqType = RequestType.Sell;
@@ -141,17 +149,13 @@ namespace P2PExchangeBot
                 {
                     new[] // first row
                     {
-                        InlineKeyboardButton.WithCallbackData("Отмена"),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey)),
                     }
                 });
 
-                await SendMessageAsync(_chatId, @"<b>Продажа</b>
-
-Введите сумму, валюту и комиссию.
-Например:
-<b>1000 bitUSD 2.0</b>", ParseMode.Html, keyboard);
+                await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.SellingMsgKey), ParseMode.Html, keyboard);
             }
-            else if (msg.Equals("Купить"))
+            else if (msg.Equals(LD.BuyKey))
             {
                 Console.WriteLine(Username + " Купить");
                 _reqType = RequestType.Buy;
@@ -161,35 +165,31 @@ namespace P2PExchangeBot
                 {
                     new[] // first row
                     {
-                        InlineKeyboardButton.WithCallbackData("Отмена"),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey)),
                     }
                 });
 
-                await SendMessageAsync(_chatId, @"<b>Покупка</b>
-
-Введите сумму, валюту и комиссию.
-Например:
-<b>1000 bitUSD 2.0</b>", ParseMode.Html, keyboard);
+                await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.BuyingMsgKey), ParseMode.Html, keyboard);
             }
-            else if (msg.Contains("Удалить"))
+            else if (msg.Contains(LD.RemoveKey))
             {
                 int id;
                 if (!ParseReqId(msg, out id))
                 {
-                    await SendMessageAsync(_chatId, @"Ошибка удаления. Попробуйте еще раз.");
+                    await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.RemoveErrorKey));
                     return;
                 }
                 Console.WriteLine(Username + " Удалить заявку №" + id);
 
                 Database.DeleteReqWithId(Username, id);
-                await SendMessageAsync(_chatId, @"Заявка №" + id + " успешно удалена");
+                await SendMessageAsync(_chatId, string.Format(LD.GetTranslate(Username, LD.RemoveSuccessKey), id));
             }
-            else if (msg.Contains("Изменить"))
+            else if (msg.Contains(LD.ChangeKey))
             {
                 int id;
                 if (!ParseReqId(msg, out id))
                 {
-                    await SendMessageAsync(_chatId, @"Ошибка изменения. Попробуйте еще раз.");
+                    await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.ChangeErrorKey));
                     return;
                 }
 
@@ -202,31 +202,27 @@ namespace P2PExchangeBot
                 {
                     new[] // first row
                     {
-                        InlineKeyboardButton.WithCallbackData("Отмена"),
-                        InlineKeyboardButton.WithCallbackData("Пропустить"),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey), LD.CancelKey),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.SkipKey), LD.SkipKey),
                     }
                 });
-                await SendMessageAsync(_chatId, @"<b>Изменение заявки</b>
-
-Введите сумму, валюту и комиссию.
-Например:
-<b>1000 bitUSD 2.0</b>", ParseMode.Html, keyboard);
+                await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.ChangingMsgKey), ParseMode.Html, keyboard);
             }
-            else if (msg.Equals("Посмотреть мои заявки"))
+            else if (msg.Equals(LD.ShowMyReqKey))
             {
                 Console.WriteLine(Username + " Посмотреть мои заявки");
                 await ProcessShowMy();
             }
-            else if (msg.Equals("Посмотреть все заявки"))
+            else if (msg.Equals(LD.ShowAllReqKey))
             {
                 Console.WriteLine(Username + " Посмотреть все заявки");
                 await ProcessShowAll();
             }
-            else if (msg.Equals("vote"))
+            else if (msg.Equals(LD.VoteKey))
             {
                 if (Database.GetVotesCount(Username) <= 0)
                 {
-                    await SendMessageAsync(_chatId, "Доступное количество голосов - 0");
+                    await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.ZeroVotesKey));
                     return;
                 }
                 CurrentStep = RequestSteps.VoteUser;
@@ -235,45 +231,54 @@ namespace P2PExchangeBot
                 {
                     new[] // first row
                     {
-                        InlineKeyboardButton.WithCallbackData("Отмена"),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey)),
                     }
                 });
-                await SendMessageAsync(_chatId, @"<b>Отдать голос</b>
-Введите username пользователя, за которого требуется отдать голос.", ParseMode.Html, replyMarkup: keyboard);
+                await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.VotingMsgKey), ParseMode.Html, replyMarkup: keyboard);
             }
-            else if (msg.Equals("unvote"))
+            else if (msg.Equals(LD.UnvoteKey))
             {
                 var votedUsersList = Database.GetMyVotedUsers(Username);
 
                 if (votedUsersList.Count == 0)
                 {
-                    await SendMessageAsync(_chatId, "Вы еще ни за кого не голосовали.");
+                    await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.VoteListEmptyKey));
                     return;
                 }
 
                 CurrentStep = RequestSteps.UnvoteUser;
-                _unvoteMessage = await SendMessageAsync(_chatId, @"<b>Забрать голос</b>", ParseMode.Html, replyMarkup: GetMarkupForUnvote(votedUsersList));
+                _unvoteMessage = await SendMessageAsync(_chatId, string.Format(@"<b>{0}</b>", LD.GetTranslate(Username, LD.UnvoteKey)), ParseMode.Html, replyMarkup: GetMarkupForUnvote(votedUsersList));
             }
-            else if (msg.Equals("escrowlist"))
+            else if (msg.Equals(LD.EscrowListKey))
             {
                 await ProcessEscrowList();
             }
-            else if (msg.Contains("Выключить оповещения"))
+            else if (msg.Contains(LD.DisableNotifKey))
             {
                 Console.WriteLine(Username + " Выключить оповещения");
                 Database.DeleteUserFromNotifications(Username);
 
-                await SendMessageAsync(_chatId, @"Оповещения выключены");
+                await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.NotificationsDisabledKey));
                 await Start();
             }
-            else if (msg.Contains("Включить оповещения"))
+            else if (msg.Contains(LD.EnableNotifKey))
             {
                 Console.WriteLine(Username + " Включить оповещения");
 
                 if (!Database.IsNotificationsRowExistForUser(Username))
                     Database.AddUserForNotifications(Username, _chatId);
 
-                await SendMessageAsync(_chatId, @"Оповещения включены");
+                await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.NotificationsEnabledKey));
+                await Start();
+            }
+            else if (msg.Contains(LD.EnglishKey))
+            {
+                Database.SetUserLanguage(Username, Languages.English);
+                await Start();
+            }
+            else if (msg.Contains(LD.RussianKey))
+            {
+                Database.SetUserLanguage(Username, Languages.Russian);
                 await Start();
             }
         }
@@ -295,7 +300,7 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals("Отмена"))
+            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)))
             {
                 Console.WriteLine(Username + " Отмена");
                 await Start();
@@ -306,7 +311,8 @@ namespace P2PExchangeBot
 
             if (splitted.Length < 3 || !int.TryParse(splitted[0], out _quantity) || !float.TryParse(splitted[2], out _fee))
             {
-                await SendMessageAsync(_chatId, @"Ошибочный ввод. Попробуйте еще раз.");
+                await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.WrongInputKey));
+                await ProcessStartState(_reqType == RequestType.Buy ? LD.BuyKey : LD.SellKey);
                 return;
             }
 
@@ -317,17 +323,17 @@ namespace P2PExchangeBot
                 {
                     new[] // first row
                     {
-                        InlineKeyboardButton.WithCallbackData("Отмена"),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey)),
                     }
                 });
-            await SendMessageAsync(_chatId, @"Введите название банка", ParseMode.Default, keyboard);
+            await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.EnterBankNameKey), ParseMode.Default, keyboard);
         }
 
         private async Task ProcessBank(string msg)
         {
             await Task.Delay(100);
 
-            if (msg.Equals("Отмена"))
+            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)))
             {
                 Console.WriteLine(Username + " Отмена");
                 await Start();
@@ -336,7 +342,7 @@ namespace P2PExchangeBot
 
             if (string.IsNullOrEmpty(msg))
             {
-                await SendMessageAsync(_chatId, @"Ошибочный ввод. Попробуйте еще раз.");
+                await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.WrongInputKey));
                 return;
             }
 
@@ -347,17 +353,17 @@ namespace P2PExchangeBot
                 {
                     new[] // first row
                     {
-                        InlineKeyboardButton.WithCallbackData("Отмена"),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey)),
                     }
                 });
-            await SendMessageAsync(_chatId, @"Введите длительность заявки в днях", ParseMode.Default, keyboard);
+            await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.EnterReqDurationKey), ParseMode.Default, keyboard);
         }
 
         private async Task ProcessEndDate(string msg)
         {
             await Task.Delay(100);
 
-            if (msg.Equals("Отмена"))
+            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)))
             {
                 Console.WriteLine(Username + " Отмена");
                 await Start();
@@ -366,19 +372,18 @@ namespace P2PExchangeBot
 
             if (!int.TryParse(msg, out _daysQuantity))
             {
-                await SendMessageAsync(_chatId, @"Ошибочный ввод. Попробуйте еще раз.");
+                await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.WrongInputKey));
                 return;
             }
 
             int reqId = Database.AddRequest(Username, _reqType, _quantity, _currency, _bank, _fee, DateTime.Now, DateTime.Now + TimeSpan.FromDays(_daysQuantity));
             
-            await SendMessageAsync(_chatId, @"Ваша заявка успешно размещена");
+            await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.SuccessfulRequestKey));
             await Start();
 
-            string requestString = Database.GetRequest(reqId);
+            string requestString = Database.GetRequest(reqId, Username);
 
-            await SendNotifications(string.Format(@"<b>Новая заявка</b>
-{0}", requestString));
+            await SendNotifications(string.Format(LD.GetTranslate(Username, LD.NewReqNotifKey), requestString));
         }
 
         private async Task SendNotifications(string message)
@@ -394,19 +399,19 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals("Отмена"))
+            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)))
             {
                 await Start();
                 return;
             }
 
-            if (!msg.Equals("Пропустить"))
+            if (!msg.Equals(LD.GetTranslate(Username, LD.SkipKey)))
             {
                 string[] splitted = msg.Split(' ');
 
                 if (splitted.Length < 3 || !int.TryParse(splitted[0], out _quantity) || !float.TryParse(splitted[2], out _fee))
                 {
-                    await SendMessageAsync(_chatId, @"Ошибочный ввод. Попробуйте еще раз.");
+                    await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.WrongInputKey));
                     return;
                 }
 
@@ -424,24 +429,24 @@ namespace P2PExchangeBot
                 {
                     new[] // first row
                     {
-                        InlineKeyboardButton.WithCallbackData("Отмена"),
-                        InlineKeyboardButton.WithCallbackData("Пропустить"),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey)),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.SkipKey)),
                     }
                 });
-            await SendMessageAsync(_chatId, @"Введите название банка", ParseMode.Default, keyboard);
+            await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.EnterBankNameKey), ParseMode.Default, keyboard);
         }
 
         private async Task ProcessChangeBank(string msg)
         {
             await Task.Delay(100);
 
-            if (msg.Equals("Отмена"))
+            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)))
             {
                 await Start();
                 return;
             }
 
-            if (!msg.Equals("Пропустить"))
+            if (!msg.Equals(LD.GetTranslate(Username, LD.SkipKey)))
             {
                 _bank = StripTagsRegex(msg);
             }
@@ -455,28 +460,28 @@ namespace P2PExchangeBot
                 {
                     new[] // first row
                     {
-                        InlineKeyboardButton.WithCallbackData("Отмена"),
-                        InlineKeyboardButton.WithCallbackData("Пропустить"),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey)),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.SkipKey)),
                     }
                 });
-            await SendMessageAsync(_chatId, @"Введите длительность заявки в днях", ParseMode.Default, keyboard);
+            await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.EnterReqDurationKey), ParseMode.Default, keyboard);
         }
 
         private async Task ProcessChangeEndDate(string msg)
         {
             await Task.Delay(100);
 
-            if (msg.Equals("Отмена"))
+            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)))
             {
                 await Start();
                 return;
             }
 
-            if (!msg.Equals("Пропустить"))
+            if (!msg.Equals(LD.GetTranslate(Username, LD.SkipKey)))
             {
                 if (!int.TryParse(msg, out _daysQuantity))
                 {
-                    await SendMessageAsync(_chatId, @"Ошибочный ввод. Попробуйте еще раз.");
+                    await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.WrongInputKey));
                     return;
                 }
             }
@@ -488,23 +493,22 @@ namespace P2PExchangeBot
             Database.UpdateRequest(_reqIdForUpdate, Username, _quantity, _currency, _bank, _fee,
                 DateTime.Now, _daysQuantity > 0 ? DateTime.Now + TimeSpan.FromDays(_daysQuantity) : DateTime.MinValue);
             
-            await SendMessageAsync(_chatId, @"Ваша заявка успешно изменена");
+            await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.SuccessfulChangeKey));
             await Start();
 
-            string reqString = Database.GetRequest(_reqIdForUpdate);
-            await SendNotifications(string.Format(@"<b>Измененная заявка</b>
-{0}", reqString));
+            string reqString = Database.GetRequest(_reqIdForUpdate, Username);
+            await SendNotifications(string.Format(LD.GetTranslate(Username, LD.ChangedReqNotifKey), reqString));
         }
 
         private async Task ProcessShowMy()
         {
             await Task.Delay(100);
 
-            var myReqs = Database.GetRequestsFor(Username);
+            var myReqs = Database.GetRequestsFor(Username, Username);
 
             if (myReqs.Count == 0)
             {
-                await SendMessageAsync(_chatId, @"Заявок нет");
+                await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.EmptyKey));
                 return;
             }
 
@@ -519,8 +523,8 @@ namespace P2PExchangeBot
                     {
                         new[] // first row
                         {
-                            InlineKeyboardButton.WithCallbackData("Удалить " + reqId),
-                            InlineKeyboardButton.WithCallbackData("Изменить " + reqId),
+                            InlineKeyboardButton.WithCallbackData(string.Format("{0} {1}", LD.GetTranslate(Username, LD.RemoveKey), reqId)),
+                            InlineKeyboardButton.WithCallbackData(string.Format("{0} {1}", LD.GetTranslate(Username, LD.ChangeKey), reqId)),
                         }
                     });
 
@@ -535,21 +539,21 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            var myReqs = Database.GetAllRequests();
+            var myReqs = Database.GetAllRequests(Username);
 
             if (myReqs.Count == 0)
             {
-                await SendMessageAsync(_chatId, "Заявок нет");
+                await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.EmptyKey));
                 return;
             }
 
             int idx = 0;
-            while (idx <= myReqs.Count)
+            while (idx < myReqs.Count)
             {
                 int count = Math.Min(10, myReqs.Count - idx);
                 var lst = myReqs.GetRange(idx, count);
 
-                string result = lst.Aggregate((current, next) => current + "\n\n" + next);
+                string result = lst.Count > 1 ? lst.Aggregate((current, next) => current + "\n\n" + next) : lst[0];
 
                 await SendMessageAsync(_chatId, result, ParseMode.Html);
                 idx += 10;
@@ -560,7 +564,7 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals("Отмена"))
+            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)))
             {
                 await Start();
                 return;
@@ -570,30 +574,26 @@ namespace P2PExchangeBot
 
             if (!Database.IsUserRegistered(votedUser))
             {
-                await SendMessageAsync(_chatId, @"Пользователь " + votedUser + @" не зарегистрирован.
-Введите другой username");
+                await SendMessageAsync(_chatId, string.Format(LD.GetTranslate(Username, LD.VotedUserNotRegisteredKey), votedUser));
                 return;
             }
 
             if (Database.IsAlreadyVotedByUser(Username, votedUser))
             {
-                await SendMessageAsync(_chatId, "Вы уже голосовали за пользователя " + votedUser + @"
-Введите другой username");
+                await SendMessageAsync(_chatId, string.Format(LD.GetTranslate(Username, LD.VotedUserAlreadyVotedKey), votedUser));
                 return;
             }
 
             if (Username.Equals(votedUser))
             {
-                await SendMessageAsync(_chatId, @"Вы не можете голосовать за себя.
-Введите другой username");
+                await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.VotedUserIsMySelfKey));
                 return;
             }
 
             Database.Vote(Username, votedUser);
             int voteCount = Database.GetVotesCount(Username);
 
-            await SendMessageAsync(_chatId, @"Вы успешно отдали свой голос за " + votedUser + @".
-Осталось голосов - " + voteCount);
+            await SendMessageAsync(_chatId, string.Format(LD.GetTranslate(Username, LD.VoteSuccessfulKey), votedUser, voteCount));
             await Start();
         }
 
@@ -602,7 +602,7 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals("Отмена"))
+            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)))
             {
                 await DeleteMessageAsync(_unvoteMessage);
                 await Start();
@@ -614,8 +614,7 @@ namespace P2PExchangeBot
             Database.Unvote(Username, votedUser);
             int voteCount = Database.GetVotesCount(Username);
             await DeleteMessageAsync(_unvoteMessage);
-            await SendMessageAsync(_chatId, "Вы забрали свой голос у " + votedUser + @".
-Доступное количество голосов - " + voteCount);
+            await SendMessageAsync(_chatId, string.Format(LD.GetTranslate(Username, LD.UnvoteSuccessfulKey), votedUser, voteCount));
             await Start();
         }
 
@@ -625,7 +624,7 @@ namespace P2PExchangeBot
 
             if (list.Count == 0)
             {
-                await SendMessageAsync(_chatId, "Пусто");
+                await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.EmptyKey));
                 return;
             }
 
@@ -656,7 +655,7 @@ namespace P2PExchangeBot
                 keyboard[i] = new InlineKeyboardButton[] { InlineKeyboardButton.WithCallbackData(usernameList[i]) };
             }
 
-            keyboard[usernameList.Count] = new InlineKeyboardButton[] { InlineKeyboardButton.WithCallbackData("Отмена") };
+            keyboard[usernameList.Count] = new InlineKeyboardButton[] { InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey)) };
 
             return new InlineKeyboardMarkup(keyboard);
         }

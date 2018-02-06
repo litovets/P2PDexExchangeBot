@@ -11,6 +11,8 @@ using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Types.InputMessageContents;
 using Telegram.Bot.Types.ReplyMarkups;
 
+using LD = P2PExchangeBot.LanguageDictionary;
+
 namespace P2PExchangeBot
 {  
 
@@ -200,11 +202,11 @@ namespace P2PExchangeBot
                 if (!isUserAdmin)
                     return;
 
-                var reqList = Database.GetAllRequests();
+                var reqList = Database.GetAllRequests(message.From.Username);
 
                 if (reqList.Count == 0)
                 {
-                    await SendMessageAsync(message.Chat.Id, "Заявок нет");
+                    await SendMessageAsync(message.Chat.Id, LD.GetTranslate(message.From.Username, LD.EmptyKey));
                 }
                 else
                 {
@@ -219,26 +221,28 @@ namespace P2PExchangeBot
 
                 if (string.IsNullOrEmpty(message.From.Username))
                 {
-                    await SendMessageAsync(message.Chat.Id, @"Для регистрации Вам нужно установить ваш Username", parseMode: ParseMode.Html,
+                    await SendMessageAsync(message.Chat.Id, @"Для регистрации Вам нужно установить ваш Username 
+(For registration you need to set your username)", parseMode: ParseMode.Html,
                     replyMarkup: new ReplyKeyboardRemove());
                     return;
                 }
 
                 if (Database.IsUserRegistered(message.From.Username))
                 {
-                    await SendMessageAsync(message.Chat.Id, @"Юзер " + message.From.Username + " уже зарегистрирован!", parseMode: ParseMode.Html,
+                    await SendMessageAsync(message.Chat.Id, 
+                        string.Format(LD.GetTranslate(message.From.Username, LD.UsernameAlreadyRegisteredKey), message.From.Username), parseMode: ParseMode.Html,
                     replyMarkup: new ReplyKeyboardRemove());
                     return;
                 }
 
                 Database.AddUser(message.From.Username);
-                await SendMessageAsync(message.Chat.Id, message.From.Username + " зарегистрирован");
+                await SendMessageAsync(message.Chat.Id, string.Format(LD.GetTranslate(message.From.Username, LD.UserRegisteredKey), message.From.Username));
             }
             else if (message.Text.StartsWith("/unregister"))
             {
                 if (string.IsNullOrEmpty(message.From.Username))
                 {
-                    await SendMessageAsync(message.Chat.Id, @"Вам нужно установить ваш Username", parseMode: ParseMode.Html,
+                    await SendMessageAsync(message.Chat.Id, @"Вам нужно установить ваш Username в Телеграм (Please, set your username in Telegram first)", parseMode: ParseMode.Html,
                     replyMarkup: new ReplyKeyboardRemove());
                     return;
                 }
@@ -263,7 +267,7 @@ namespace P2PExchangeBot
                 
                 if (string.IsNullOrEmpty(username))
                 {
-                    await SendMessageAsync(message.Chat.Id, @"Пожайлуйста, введите команду в виде: <b>/unregister 'username'</b>
+                    await SendMessageAsync(message.Chat.Id, @"Пожалуйста, введите команду в виде: <b>/unregister 'username'</b>
 Подставьте вместо '<username>' имя пользователя.", ParseMode.Html);
                     return;
                 }
@@ -283,7 +287,7 @@ namespace P2PExchangeBot
 
                 if (escrowList.Count == 0)
                 {
-                    await SendMessageAsync(message.Chat.Id, "Пусто");
+                    await SendMessageAsync(message.Chat.Id, "Пусто (Empty)");
                     return;
                 }
 
@@ -308,15 +312,17 @@ namespace P2PExchangeBot
         {
             if (string.IsNullOrEmpty(message.From.Username))
             {
-                await SendMessageAsync(message.Chat.Id, @"Для работы со мной Вам нужно установить ваш Username.
-Сделайте это и попробуйте еще раз введя команду /start", parseMode: ParseMode.Html,
+                await SendMessageAsync(message.Chat.Id, @"Для работы со мной Вам нужно установить ваш Username в Телеграм.
+Сделайте это и попробуйте еще раз введя команду /start
+
+You need to set your username шт Telegram first.", parseMode: ParseMode.Html,
                 replyMarkup: new ReplyKeyboardRemove());
                 return;
             }
 
             if (!Database.IsUserRegistered(message.From.Username))
             {
-                await SendMessageAsync(message.Chat.Id, "Вы не зарегистрированы. Для работы со мной вам нужно зарегистрироваться в групповом чате.");
+                await SendMessageAsync(message.Chat.Id, LD.GetTranslate(message.From.Username, LD.PleaseRegisterGroupChatKey));
                 return;
             }
 
@@ -403,7 +409,10 @@ namespace P2PExchangeBot
             else
             {
                 var usage = @"<b>Использование:</b>
-/start   - Начало процесса";
+/start   - Начало процесса
+
+<b>Usage:</b>
+/start - start process";
                 
 
                 await SendMessageAsync(message.Chat.Id, usage, ParseMode.Html,

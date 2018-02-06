@@ -4,6 +4,8 @@ using System.IO;
 using System.Data.SQLite;
 using System.Collections.Generic;
 
+using LD = P2PExchangeBot.LanguageDictionary;
+
 namespace P2PExchangeBot
 {
     enum RequestType
@@ -17,11 +19,6 @@ namespace P2PExchangeBot
         const string DBFileName = "db.sqlite";
 
         const int MaxVotes = 5;
-
-        const string RequestResultStringTemplate = @"<b>({0})</b>
-{1} <i>хочет {2}</i> <b>{3} {4}</b> <i>с комиссией</i> <b>{5}%</b>.
-<b>Банк</b> - {6}. 
-<b>Начало:</b> {7}, <b>Окончание:</b> {8}";
 
         const string EscrowListTemplate = @"@{0} - <b>{1}</b>";
 
@@ -63,7 +60,8 @@ namespace P2PExchangeBot
                   CREATE TABLE IF NOT EXISTS notifications (username TEXT, chatId INTEGER);
                   CREATE TABLE IF NOT EXISTS masterchat (chatId INTEGER);
                   CREATE TABLE IF NOT EXISTS users (username TEXT);
-                  CREATE TABLE IF NOT EXISTS users_votes (username TEXT, votedUser TEXT);";
+                  CREATE TABLE IF NOT EXISTS users_votes (username TEXT, votedUser TEXT);
+                  CREATE TABLE IF NOT EXISTS users_languages (username TEXT, language INTEGER)";
 
             SQLiteCommand command = new SQLiteCommand(sql, _dbConnection);
             command.ExecuteNonQuery();
@@ -132,7 +130,7 @@ namespace P2PExchangeBot
             return id;
         }
 
-        public static string GetRequest(int id)
+        public static string GetRequest(int id, string callUser)
         {
             string sql = "SELECT * FROM requests WHERE id=" + id;
 
@@ -148,15 +146,15 @@ namespace P2PExchangeBot
                 {
                     var num = reader["id"].ToString();
                     string user = "@" + reader["username"].ToString();
-                    string reqType = GetLocalizedString((RequestType)(int.Parse(reader["requestType"].ToString())));
+                    string reqType = GetLocalizedString((RequestType)(int.Parse(reader["requestType"].ToString())), callUser);
                     var quantity = reader["quantity"].ToString();
                     string currency = reader["currency"].ToString();
                     string fee = reader["fee"].ToString();
                     string bankName = reader["bankName"].ToString();
                     string startDate = reader["startDate"].ToString();
                     string endDate = reader["endDate"].ToString();
-
-                    result = string.Format(RequestResultStringTemplate, num, user, reqType, quantity, currency, fee, bankName, startDate, endDate);
+                    
+                    result = string.Format(LD.GetTranslate(callUser, LD.RequestResultStringTemplate), num, user, reqType, quantity, currency, fee, bankName, startDate, endDate);
                 }
 
                 reader.Close();
@@ -169,18 +167,18 @@ namespace P2PExchangeBot
             return result;
         }
 
-        public static List<string> GetRequestsFor(string username)
+        public static List<string> GetRequestsFor(string username, string callUser)
         {
             string sql = "SELECT * FROM requests WHERE username = \"" + username + "\"";
 
-            return GetResultsForSql(sql);
+            return GetResultsForSql(sql, callUser);
         }
 
-        public static List<string> GetAllRequests()
+        public static List<string> GetAllRequests(string callUser)
         {
             string sql = "SELECT * FROM requests";
 
-            return GetResultsForSql(sql);
+            return GetResultsForSql(sql, callUser);
         }
 
         public static void DeleteReqWithId(string username, int id)
@@ -412,7 +410,57 @@ namespace P2PExchangeBot
             return escrowList;
         }
 
-        private static List<string> GetResultsForSql(string sql)
+        public static Languages GetUserLanguage(string username)
+        {
+            string sql = "SELECT count(*) FROM users_languages WHERE username=\"" + username + "\"";
+            SQLiteCommand command = new SQLiteCommand(sql, _dbConnection);
+            int count = Convert.ToInt32(command.ExecuteScalar());
+
+            Languages userLang = LanguageDictionary.DefaultLanguage;
+
+            if (count > 0)
+            {
+                sql = "SELECT language FROM users_languages WHERE username = \"" + username + "\"";
+
+                command = new SQLiteCommand(sql, _dbConnection);
+
+                try
+                {
+                    SQLiteDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        var num = reader["language"].ToString();
+                        userLang = (Languages)int.Parse(num);
+                    }
+
+                    reader.Close();
+
+                    return userLang;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception during GetMasterChatId. Message: " + ex.Message);
+                }
+            }
+            else
+            {
+                sql = string.Format("INSERT INTO users_languages(username, language) VALUES(\"{0}\",\"{1}\")", username, (int)userLang);
+                command = new SQLiteCommand(sql, _dbConnection);
+                command.ExecuteNonQuery();
+            }
+
+            return userLang;
+        }
+
+        public static void SetUserLanguage(string username, Languages language)
+        {
+            string sql = "UPDATE users_languages SET language=\"" + ((int)language).ToString() + "\" WHERE username=\"" + username + "\"";
+            SQLiteCommand command = new SQLiteCommand(sql, _dbConnection);
+            command.ExecuteNonQuery();
+        }
+
+        private static List<string> GetResultsForSql(string sql, string callUser)
         {
             List<string> result = new List<string>();
             
@@ -426,7 +474,7 @@ namespace P2PExchangeBot
                 {
                     var num = reader["id"].ToString();
                     string user = "@" + reader["username"].ToString();
-                    string reqType = GetLocalizedString((RequestType)(int.Parse(reader["requestType"].ToString())));
+                    string reqType = GetLocalizedString((RequestType)(int.Parse(reader["requestType"].ToString())), callUser);
                     var quantity = reader["quantity"].ToString();
                     string currency = reader["currency"].ToString();
                     string fee = reader["fee"].ToString();
@@ -434,7 +482,7 @@ namespace P2PExchangeBot
                     string startDate = reader["startDate"].ToString();
                     string endDate = reader["endDate"].ToString();
 
-                    string line = string.Format(RequestResultStringTemplate, num, user, reqType, quantity, currency, fee, bankName, startDate, endDate);
+                    string line = string.Format(LD.GetTranslate(callUser, LD.RequestResultStringTemplate), num, user, reqType, quantity, currency, fee, bankName, startDate, endDate);
 
                     result.Add(line);
                 }
@@ -449,14 +497,14 @@ namespace P2PExchangeBot
             return result;
         }
 
-        private static string GetLocalizedString(RequestType type)
+        private static string GetLocalizedString(RequestType type, string callUser)
         {
             switch (type)
             {
                 case RequestType.Buy:
-                    return "купить";
+                    return LD.GetTranslate(callUser, LD.BuyKey).ToLower();
                 case RequestType.Sell:
-                    return "продать";
+                    return LD.GetTranslate(callUser, LD.SellKey).ToLower();
                 default:
                     return "___";
             }
