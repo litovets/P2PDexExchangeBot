@@ -523,8 +523,8 @@ namespace P2PExchangeBot
                     {
                         new[] // first row
                         {
-                            InlineKeyboardButton.WithCallbackData(string.Format("{0} {1}", LD.GetTranslate(Username, LD.RemoveKey), reqId)),
-                            InlineKeyboardButton.WithCallbackData(string.Format("{0} {1}", LD.GetTranslate(Username, LD.ChangeKey), reqId)),
+                            InlineKeyboardButton.WithCallbackData(string.Format("{0} {1}", LD.GetTranslate(Username, LD.RemoveKey), reqId), string.Format("{0} {1}", LD.RemoveKey, reqId)),
+                            InlineKeyboardButton.WithCallbackData(string.Format("{0} {1}", LD.GetTranslate(Username, LD.ChangeKey), reqId), string.Format("{0} {1}", LD.ChangeKey, reqId)),
                         }
                     });
 
