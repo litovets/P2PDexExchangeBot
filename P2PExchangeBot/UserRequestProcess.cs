@@ -300,7 +300,7 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)))
+            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)) || msg.Equals("/start"))
             {
                 Console.WriteLine(Username + " Отмена");
                 await Start();
@@ -333,7 +333,7 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)))
+            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)) || msg.Equals("/start"))
             {
                 Console.WriteLine(Username + " Отмена");
                 await Start();
@@ -363,7 +363,7 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)))
+            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)) || msg.Equals("/start"))
             {
                 Console.WriteLine(Username + " Отмена");
                 await Start();
@@ -399,7 +399,7 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)))
+            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)) || msg.Equals("/start"))
             {
                 await Start();
                 return;
@@ -440,7 +440,7 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)))
+            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)) || msg.Equals("/start"))
             {
                 await Start();
                 return;
@@ -471,7 +471,7 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)))
+            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)) || msg.Equals("/start"))
             {
                 await Start();
                 return;
@@ -564,7 +564,7 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)))
+            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)) || msg.Equals("/start"))
             {
                 await Start();
                 return;
@@ -602,7 +602,7 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)))
+            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)) || msg.Equals("/start"))
             {
                 await DeleteMessageAsync(_unvoteMessage);
                 await Start();

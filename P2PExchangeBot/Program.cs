@@ -339,6 +339,10 @@ You need to set your username шт Telegram first.", parseMode: ParseMode.Html,
                 {
                     await req.Start();
                 }
+                else
+                {
+                    await req.ProcessMessage("/start");
+                }
             }/*
             else if (message.Text.StartsWith("/startgame"))
             {
