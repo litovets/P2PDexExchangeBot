@@ -149,7 +149,7 @@ namespace P2PExchangeBot
                 {
                     new[] // first row
                     {
-                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey)),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey), LD.CancelKey),
                     }
                 });
 
@@ -165,7 +165,7 @@ namespace P2PExchangeBot
                 {
                     new[] // first row
                     {
-                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey)),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey), LD.CancelKey),
                     }
                 });
 
@@ -231,7 +231,7 @@ namespace P2PExchangeBot
                 {
                     new[] // first row
                     {
-                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey)),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey), LD.CancelKey),
                     }
                 });
                 await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.VotingMsgKey), ParseMode.Html, replyMarkup: keyboard);
@@ -300,7 +300,7 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)) || msg.Equals("/start"))
+            if (msg.Equals(LD.CancelKey) || msg.Equals("/start"))
             {
                 Console.WriteLine(Username + " Отмена");
                 await Start();
@@ -323,7 +323,7 @@ namespace P2PExchangeBot
                 {
                     new[] // first row
                     {
-                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey)),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey), LD.CancelKey),
                     }
                 });
             await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.EnterBankNameKey), ParseMode.Default, keyboard);
@@ -333,7 +333,7 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)) || msg.Equals("/start"))
+            if (msg.Equals(LD.CancelKey) || msg.Equals("/start"))
             {
                 Console.WriteLine(Username + " Отмена");
                 await Start();
@@ -353,7 +353,7 @@ namespace P2PExchangeBot
                 {
                     new[] // first row
                     {
-                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey)),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey), LD.CancelKey),
                     }
                 });
             await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.EnterReqDurationKey), ParseMode.Default, keyboard);
@@ -363,7 +363,7 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)) || msg.Equals("/start"))
+            if (msg.Equals(LD.CancelKey) || msg.Equals("/start"))
             {
                 Console.WriteLine(Username + " Отмена");
                 await Start();
@@ -399,13 +399,13 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)) || msg.Equals("/start"))
+            if (msg.Equals(LD.CancelKey) || msg.Equals("/start"))
             {
                 await Start();
                 return;
             }
 
-            if (!msg.Equals(LD.GetTranslate(Username, LD.SkipKey)))
+            if (!msg.Equals(LD.SkipKey))
             {
                 string[] splitted = msg.Split(' ');
 
@@ -429,8 +429,8 @@ namespace P2PExchangeBot
                 {
                     new[] // first row
                     {
-                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey)),
-                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.SkipKey)),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey), LD.CancelKey),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.SkipKey), LD.SkipKey),
                     }
                 });
             await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.EnterBankNameKey), ParseMode.Default, keyboard);
@@ -440,13 +440,13 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)) || msg.Equals("/start"))
+            if (msg.Equals(LD.CancelKey) || msg.Equals("/start"))
             {
                 await Start();
                 return;
             }
 
-            if (!msg.Equals(LD.GetTranslate(Username, LD.SkipKey)))
+            if (!msg.Equals(LD.SkipKey))
             {
                 _bank = StripTagsRegex(msg);
             }
@@ -460,8 +460,8 @@ namespace P2PExchangeBot
                 {
                     new[] // first row
                     {
-                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey)),
-                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.SkipKey)),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey), LD.CancelKey),
+                        InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.SkipKey), LD.SkipKey),
                     }
                 });
             await SendMessageAsync(_chatId, LD.GetTranslate(Username, LD.EnterReqDurationKey), ParseMode.Default, keyboard);
@@ -471,13 +471,13 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)) || msg.Equals("/start"))
+            if (msg.Equals(LD.CancelKey) || msg.Equals("/start"))
             {
                 await Start();
                 return;
             }
 
-            if (!msg.Equals(LD.GetTranslate(Username, LD.SkipKey)))
+            if (!msg.Equals(LD.SkipKey))
             {
                 if (!int.TryParse(msg, out _daysQuantity))
                 {
@@ -564,7 +564,7 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)) || msg.Equals("/start"))
+            if (msg.Equals(LD.CancelKey) || msg.Equals("/start"))
             {
                 await Start();
                 return;
@@ -602,7 +602,7 @@ namespace P2PExchangeBot
         {
             await Task.Delay(100);
 
-            if (msg.Equals(LD.GetTranslate(Username, LD.CancelKey)) || msg.Equals("/start"))
+            if (msg.Equals(LD.CancelKey) || msg.Equals("/start"))
             {
                 await DeleteMessageAsync(_unvoteMessage);
                 await Start();
@@ -655,7 +655,7 @@ namespace P2PExchangeBot
                 keyboard[i] = new InlineKeyboardButton[] { InlineKeyboardButton.WithCallbackData(usernameList[i]) };
             }
 
-            keyboard[usernameList.Count] = new InlineKeyboardButton[] { InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey)) };
+            keyboard[usernameList.Count] = new InlineKeyboardButton[] { InlineKeyboardButton.WithCallbackData(LD.GetTranslate(Username, LD.CancelKey), LD.CancelKey) };
 
             return new InlineKeyboardMarkup(keyboard);
         }
