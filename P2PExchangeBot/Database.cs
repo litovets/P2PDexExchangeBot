@@ -40,9 +40,7 @@ namespace P2PExchangeBot
         {
             SQLiteConnection.CreateFile(DBFileName);
 
-            OpenDB();
-
-            CreateTables();
+            OpenDB();           
         }
 
         static void OpenDB()
@@ -51,6 +49,8 @@ namespace P2PExchangeBot
             _dbConnection.Open();
 
             CreateTables();
+
+            CleanUp();
         }
 
         static void CreateTables()
@@ -298,6 +298,22 @@ namespace P2PExchangeBot
             string sql = "DELETE FROM users WHERE username=\"" + username + "\"";
             SQLiteCommand command = new SQLiteCommand(sql, _dbConnection);
             command.ExecuteNonQuery();
+
+            sql = "DELETE FROM requests WHERE username=\"" + username + "\"";
+            command = new SQLiteCommand(sql, _dbConnection);
+            command.ExecuteNonQuery();
+
+            sql = "DELETE FROM notifications WHERE username=\"" + username + "\"";
+            command = new SQLiteCommand(sql, _dbConnection);
+            command.ExecuteNonQuery();
+
+            sql = "DELETE FROM users_votes WHERE username=\"" + username + "\"";
+            command = new SQLiteCommand(sql, _dbConnection);
+            command.ExecuteNonQuery();
+
+            sql = "DELETE FROM users_languages WHERE username=\"" + username + "\"";
+            command = new SQLiteCommand(sql, _dbConnection);
+            command.ExecuteNonQuery();
         }
 
         public static int GetVotesCount(string username)
@@ -508,6 +524,25 @@ namespace P2PExchangeBot
                 default:
                     return "___";
             }
+        }
+
+        private static void CleanUp()
+        {
+            string sql = "DELETE FROM requests WHERE username NOT IN (SELECT username FROM users)";
+            SQLiteCommand command = new SQLiteCommand(sql, _dbConnection);
+            command.ExecuteNonQuery();
+
+            sql = "DELETE FROM notifications WHERE username NOT IN(SELECT username FROM users)";
+            command = new SQLiteCommand(sql, _dbConnection);
+            command.ExecuteNonQuery();
+
+            sql = "DELETE FROM users_votes WHERE username NOT IN(SELECT username FROM users)";
+            command = new SQLiteCommand(sql, _dbConnection);
+            command.ExecuteNonQuery();
+
+            sql = "DELETE FROM users_languages WHERE username NOT IN(SELECT username FROM users)";
+            command = new SQLiteCommand(sql, _dbConnection);
+            command.ExecuteNonQuery();
         }
     }
 }
