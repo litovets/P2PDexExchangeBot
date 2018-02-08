@@ -311,6 +311,10 @@ namespace P2PExchangeBot
             command = new SQLiteCommand(sql, _dbConnection);
             command.ExecuteNonQuery();
 
+            sql = "DELETE FROM users_votes WHERE votedUser=\"" + username + "\"";
+            command = new SQLiteCommand(sql, _dbConnection);
+            command.ExecuteNonQuery();
+
             sql = "DELETE FROM users_languages WHERE username=\"" + username + "\"";
             command = new SQLiteCommand(sql, _dbConnection);
             command.ExecuteNonQuery();
@@ -537,6 +541,10 @@ namespace P2PExchangeBot
             command.ExecuteNonQuery();
 
             sql = "DELETE FROM users_votes WHERE username NOT IN(SELECT username FROM users)";
+            command = new SQLiteCommand(sql, _dbConnection);
+            command.ExecuteNonQuery();
+
+            sql = "DELETE FROM users_votes WHERE votedUser NOT IN(SELECT username FROM users)";
             command = new SQLiteCommand(sql, _dbConnection);
             command.ExecuteNonQuery();
 

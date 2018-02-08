@@ -570,7 +570,7 @@ namespace P2PExchangeBot
                 return;
             }
 
-            string votedUser = msg.TrimStart('@');
+            string votedUser = msg.Trim('"').TrimStart('@');
 
             if (!Database.IsUserRegistered(votedUser))
             {
