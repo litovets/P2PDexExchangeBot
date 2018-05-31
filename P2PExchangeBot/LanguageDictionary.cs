@@ -85,12 +85,12 @@ namespace P2PExchangeBot
 
 Enter amount, currency and fee.
 For example:
-<b>1000 bitUSD 2.0</b>"},
+<b>1000 bitUSD 2</b>"},
                 { BuyingMsgKey, @"<b>Buying</b>
 
 Enter amount, currency and fee.
 For example:
-<b>1000 bitUSD 2.0</b>"},
+<b>1000 bitUSD 2</b>"},
                 { RemoveKey, "Remove" },
                 { ChangeKey, "Change" },
                 { RemoveErrorKey, "Remove error" },
@@ -100,7 +100,7 @@ For example:
 
 Enter amount, currency and fee.
 For example:
-<b>1000 bitUSD 2.0</b>" },
+<b>1000 bitUSD 2</b>" },
                 { ZeroVotesKey, "Available votes - 0" },
                 { VotingMsgKey, @"<b>Voting</b>
 Enter the username you want to vote for." },
@@ -156,12 +156,12 @@ You have {1} votes left" },
 
 Введите сумму, валюту и комиссию.
 Например:
-<b>1000 bitUSD 2.0</b>"},
+<b>1000 bitUSD 2</b>"},
                 { BuyingMsgKey, @"<b>Покупка</b>
 
 Введите сумму, валюту и комиссию.
 Например:
-<b>1000 bitUSD 2.0</b>"},
+<b>1000 bitUSD 2</b>"},
                 { RemoveKey, "Удалить" },
                 { ChangeKey, "Изменить" },
                 { RemoveErrorKey, "Ошибка удаления" },
@@ -171,7 +171,7 @@ You have {1} votes left" },
 
 Введите сумму, валюту и комиссию.
 Например:
-<b>1000 bitUSD 2.0</b>" },
+<b>1000 bitUSD 2</b>" },
                 { ZeroVotesKey, "Доступное количество голосов - 0" },
                 { VotingMsgKey, @"<b>Отдать голос</b>
 Введите username пользователя, за которого требуется отдать голос." },

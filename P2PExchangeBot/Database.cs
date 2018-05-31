@@ -5,6 +5,7 @@ using System.Data.SQLite;
 using System.Collections.Generic;
 
 using LD = P2PExchangeBot.LanguageDictionary;
+using System.Globalization;
 
 namespace P2PExchangeBot
 {
@@ -234,7 +235,10 @@ namespace P2PExchangeBot
                 Console.WriteLine(ex.Message);
             }
 
-            var forDelete = result.Where(pair => (DateTime.Now > DateTime.Parse(pair.Value))).Select(pair => pair.Key);
+            var ci = new CultureInfo("en-US");
+            var formats = new[] { "M-d-yyyy", "dd-MM-yyyy", "MM-dd-yyyy", "M.d.yyyy", "dd.MM.yyyy", "MM.dd.yyyy" }.Union(ci.DateTimeFormat.GetAllDateTimePatterns()).ToArray();
+
+            var forDelete = result.Where(pair => (DateTime.Now > DateTime.ParseExact(pair.Value, formats, ci, DateTimeStyles.AssumeLocal))).Select(pair => pair.Key);
 
             foreach (var id in forDelete)
             {
