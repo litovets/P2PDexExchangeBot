@@ -6,9 +6,6 @@ using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.InlineKeyboardButtons;
-using Telegram.Bot.Types.InlineQueryResults;
-using Telegram.Bot.Types.InputMessageContents;
 using Telegram.Bot.Types.ReplyMarkups;
 
 using LD = P2PExchangeBot.LanguageDictionary;
@@ -18,8 +15,8 @@ namespace P2PExchangeBot
 
     class Program
     {
-        //private static readonly TelegramBotClient Bot = new TelegramBotClient("457479546:AAHhonN0rtZYf3Mp3mfSTuDbRlrey3KHOy8"); //Test Bot
-        private static readonly TelegramBotClient Bot = new TelegramBotClient("495547845:AAHoqJ8ornC--R8TBy52aqpnRA67LGyiI0M");  //Release Bot
+        private static readonly TelegramBotClient Bot = new TelegramBotClient("457479546:AAHhonN0rtZYf3Mp3mfSTuDbRlrey3KHOy8"); //Test Bot
+        //private static readonly TelegramBotClient Bot = new TelegramBotClient("495547845:AAHoqJ8ornC--R8TBy52aqpnRA67LGyiI0M");  //Release Bot
 
         private static Dictionary<string, UserRequestProcess> _requestsDic = new Dictionary<string, UserRequestProcess>();
 
@@ -53,7 +50,6 @@ namespace P2PExchangeBot
             Bot.OnCallbackQuery += OnCallbackQueryReceived;
             Bot.OnMessage += OnMessage;
             Bot.OnMessageEdited += OnMessage;
-            Bot.OnInlineQuery += OnInlineQuery;
             Bot.OnInlineResultChosen += OnInlineResultChosen;
             Bot.OnReceiveError += OnReceiveError;
 
@@ -88,46 +84,13 @@ namespace P2PExchangeBot
             Console.WriteLine($"Received choosen inline result: {e.ChosenInlineResult.ResultId}");
         }
 
-        private static async void OnInlineQuery(object sender, InlineQueryEventArgs e)
-        {
-            InlineQueryResult[] results = {
-                new InlineQueryResultLocation
-                {
-                    Id = "1",
-                    Latitude = 40.7058316f, // displayed result
-                    Longitude = -74.2581888f,
-                    Title = "New York",
-                    InputMessageContent = new InputLocationMessageContent // message if result is selected
-                    {
-                        Latitude = 40.7058316f,
-                        Longitude = -74.2581888f,
-                    }
-                },
-
-                new InlineQueryResultLocation
-                {
-                    Id = "2",
-                    Longitude = 52.507629f, // displayed result
-                    Latitude = 13.1449577f,
-                    Title = "Berlin",
-                    InputMessageContent = new InputLocationMessageContent // message if result is selected
-                    {
-                        Longitude = 52.507629f,
-                        Latitude = 13.1449577f
-                    }
-                }
-            };
-
-            await Bot.AnswerInlineQueryAsync(e.InlineQuery.Id, results, isPersonal: true, cacheTime: 0);
-        }
-
         private static Message _lastMessage;
 
         private static async void OnMessage(object sender, MessageEventArgs e)
         {
             var message = e.Message;
                        
-            if (message == null || message.Type != MessageType.TextMessage) return;
+            if (message == null || message.Type != MessageType.Text) return;
 
             if (message.Chat.Type == ChatType.Supergroup || message.Chat.Type == ChatType.Group)
             {
