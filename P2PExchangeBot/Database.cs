@@ -198,7 +198,7 @@ namespace P2PExchangeBot
             updateValues.Add(quantity > 0 ? "quantity=" + quantity : "");
             updateValues.Add(!string.IsNullOrEmpty(currency) ? "currency=\"" + currency + "\"" : "");
             updateValues.Add(!string.IsNullOrEmpty(bankName) ? "bankName=\"" + bankName + "\"" : "");
-            updateValues.Add(fee >= 0f ? "fee=" + fee.ToString("F2") : "");
+            updateValues.Add(fee >= 0f ? "fee=" + fee.ToString("F0") : "");
             updateValues.Add(endDate != DateTime.MinValue ? "startDate=\"" + startDate.ToShortDateString() + "\"" : "");
             updateValues.Add(endDate != DateTime.MinValue ? "endDate=\"" + endDate.ToShortDateString() + "\"" : "");
             var withoutEmpty = updateValues.Where(str => !string.IsNullOrEmpty(str));
